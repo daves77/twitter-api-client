@@ -40,6 +40,7 @@ class Account:
         self.gql_api = 'https://twitter.com/i/api/graphql'
         self.v1_api = 'https://api.twitter.com/1.1'
         self.v2_api = 'https://twitter.com/i/api/2'
+        self.pro_api = 'https://pro.twitter.com/i/api/graphql'
         self.logger = self._init_logger(**kwargs)
         self.session = self._validate_session(email, username, password, session, **kwargs)
         self.rate_limits = {}
@@ -65,6 +66,9 @@ class Account:
         if self.debug:
             log(self.logger, self.debug, r)
         return r.json()
+
+    def pro_gql(self, method: str, operation: tuple, variables: dict, features: dict = Operation.default_features) -> dict:
+        pass
 
     def v1(self, path: str, params: dict) -> dict:
         headers = get_headers(self.session)
