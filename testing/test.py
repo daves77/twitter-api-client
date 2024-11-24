@@ -14,10 +14,10 @@ with open('accounts.json', 'r') as file:
 print(len(accounts))
 session = Account(cookies='cookies.json')
 
-for account in accounts[100:]:
+for account in accounts[391:]:
     print("now following",  account['name'])
     session.follow(account['sourceRefId'])
-    time.sleep(random.randint(1, 10))
+    time.sleep(random.randint(1, 6))
 
 # print(account.session)
 # print('running')

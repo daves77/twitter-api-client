@@ -45,7 +45,7 @@ class Account:
         self.session = self._validate_session(email, username, password, session, **kwargs)
         self.rate_limits = {}
 
-    def gql(self, method: str, operation: tuple, variables: dict, features: dict = Operation.default_features) -> dict:
+    def gql(self, method: str, operation: tuple, variables: dict, features: dict = Operation.default_features, pro_api: bool = False) -> dict:
         qid, op = operation
         params = {
             'queryId': qid,
@@ -56,9 +56,11 @@ class Account:
             data = {'json': params}
         else:
             data = {'params': {k: orjson.dumps(v).decode() for k, v in params.items()}}
+
+        url = self.pro_api if pro_api else self.gql_api
         r = self.session.request(
             method=method,
-            url=f'{self.gql_api}/{qid}/{op}',
+            url=f'{url}/{qid}/{op}',
             headers=get_headers(self.session),
             **data
         )
@@ -66,9 +68,6 @@ class Account:
         if self.debug:
             log(self.logger, self.debug, r)
         return r.json()
-
-    def pro_gql(self, method: str, operation: tuple, variables: dict, features: dict = Operation.default_features) -> dict:
-        pass
 
     def v1(self, path: str, params: dict) -> dict:
         headers = get_headers(self.session)
@@ -458,8 +457,11 @@ class Account:
     def bookmarks(self, limit=math.inf) -> list[dict]:
         return self._paginate('GET', Operation.Bookmarks, {}, limit)
 
-    def _paginate(self, method: str, operation: tuple, variables: dict, limit: int) -> list[dict]:
-        initial_data = self.gql(method, operation, variables)
+    def tweetdeck_timeline(self, limit=math.inf) -> list[dict]:
+        return self._paginate('GET', Operation.TweetDeckTimeline, Operation.default_variables, limit)
+
+    def _paginate(self, method: str, operation: tuple, variables: dict, limit: int, pro_api: bool = False) -> list[dict]:
+        initial_data = self.gql(method, operation, variables, pro_api=pro_api)
         res = [initial_data]
         ids = set(find_key(initial_data, 'rest_id'))
         dups = 0
@@ -472,7 +474,7 @@ class Account:
                 return res
 
             variables['cursor'] = cursor
-            data = self.gql(method, operation, variables)
+            data = self.gql(method, operation, variables, pro_api=pro_api)
 
             cursor = get_cursor(data)
             ids |= set(find_key(data, 'rest_id'))

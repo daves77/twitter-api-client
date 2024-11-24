@@ -147,6 +147,7 @@ class Operation:
     HomeLatestTimeline = 'zhX91JE87mWvfprhYE97xA', 'HomeLatestTimeline'
     HomeTimeline = 'HCosKfLNW1AcOo3la3mMgg', 'HomeTimeline'
     Bookmarks = 'tmd4ifV8RHltzn8ymGg1aw', 'Bookmarks'
+    TweetDeckTimeline = 'HyuV8ml52TYmyUjyrDq1CQ', 'HomeLatestTimeline'
 
     # misc/not implemented
     AdAccounts = 'a8KxGfFQAmm3WxqemuqSRA', 'AdAccounts'
